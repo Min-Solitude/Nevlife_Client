@@ -1,25 +1,21 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { publicRoutes } from './routes'
-import MainLayout, { MainLayoutProps } from './layouts/MainLayout/MainLayout'
 import { Fragment, Suspense } from 'react'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+
+import { routes } from './configs'
 
 function App() {
     return (
-        <div className='App'>
+        <div className='App overflow-x-hidden'>
             <Suspense fallback={'Loading...'}>
                 <BrowserRouter>
                     <Routes>
-                        {publicRoutes.map((route, index) => {
-                            let Layout: React.FC<MainLayoutProps> = MainLayout
-                            if (route.layout) {
-                                Layout = route.layout
-                            } else if (route.layout === null) {
-                                Layout = (props: MainLayoutProps) => <>{props.children}</>
-                            }
+                        {routes.map((route) => {
                             const Page = route.component
+                            const Layout = route.layout || Fragment
+                            // Lay is private or public | check no
                             return (
                                 <Route
-                                    key={index}
+                                    key={route.path}
                                     path={route.path}
                                     element={
                                         <Layout>
