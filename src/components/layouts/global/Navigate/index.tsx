@@ -1,9 +1,8 @@
 import IonIcon from '@reacticons/ionicons'
 import View from 'components/shared/View'
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 const Navigate = () => {
-    const navigate = useNavigate()
     return (
         <div className='fixed bottom-0 w-full '>
             <View className='flex items-center justify-center gap-2  bg-white p-2 shadow-2xl'>

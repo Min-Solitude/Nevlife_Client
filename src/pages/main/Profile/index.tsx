@@ -22,8 +22,6 @@ const Profile = () => {
             canvas.height = video.videoHeight
             const ctx = canvas.getContext('2d')
             ctx?.drawImage(video, 0, 0)
-            // Chuyển canvas thành base64
-            const data = canvas.toDataURL('image/png')
         } catch (error) {
             toast.error('Không thể mở camera')
         }
