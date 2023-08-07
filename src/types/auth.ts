@@ -10,3 +10,12 @@ export interface IAuthentication {
     salt?: string
     sessionToken?: string
 }
+
+export interface IUser {
+    username: string
+    email: string
+    address: string
+    avatar: string
+    phoneNumber: string
+    _id: string
+}

@@ -17,34 +17,34 @@ const Navigate = () => {
                     <IonIcon name='home' className='translate-y-[0.2rem] text-2xl ' />
                 </NavLink>
                 <NavLink
-                    to='/store'
+                    to='/booking'
                     className={(nav) =>
                         nav.isActive
                             ? 'background_gradient flex-1 rounded-full py-1 text-center text-white'
                             : 'flex-1 rounded-full py-1 text-center text-gray-700'
                     }
                 >
-                    <IonIcon name='storefront' className='translate-y-[0.2rem] text-2xl  ' />
+                    <IonIcon name='book' className='translate-y-[0.2rem] text-2xl  ' />
                 </NavLink>
                 <NavLink
-                    to='/forum'
+                    to='/about'
                     className={(nav) =>
                         nav.isActive
                             ? 'background_gradient flex-1 rounded-full py-1 text-center text-white'
                             : 'flex-1 rounded-full py-1 text-center text-gray-700'
                     }
                 >
-                    <IonIcon name='newspaper' className='translate-y-[0.2rem] text-2xl  ' />
+                    <IonIcon name='information-circle' className='translate-y-[0.2rem] text-2xl ' />
                 </NavLink>
                 <NavLink
-                    to='/profile/1'
+                    to='/health'
                     className={(nav) =>
                         nav.isActive
                             ? 'background_gradient flex-1 rounded-full py-1 text-center text-white'
                             : 'flex-1 rounded-full py-1 text-center text-gray-700'
                     }
                 >
-                    <IonIcon name='person' className='translate-y-[0.2rem]  text-2xl ' />
+                    <IonIcon name='body' className='translate-y-[0.2rem] text-2xl ' />
                 </NavLink>
             </View>
         </div>

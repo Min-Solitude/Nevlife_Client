@@ -1,0 +1,59 @@
+{
+    "name": "Nevlife",
+    "short_name": "Nevlife App",
+    "theme_color": "#1976d2",
+    "background_color": "#f5f5f5",
+    "display": "standalone",
+    "scope": "./",
+    "start_url": "./",
+    "icons": [
+        {
+            "src": "https://i.pinimg.com/564x/43/7e/2e/437e2ec1e721fffc7df77f661e67e92a.jpg",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.pinimg.com/564x/43/7e/2e/437e2ec1e721fffc7df77f661e67e92a.jpg",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.pinimg.com/564x/43/7e/2e/437e2ec1e721fffc7df77f661e67e92a.jpg",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.pinimg.com/564x/43/7e/2e/437e2ec1e721fffc7df77f661e67e92a.jpg",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.pinimg.com/564x/43/7e/2e/437e2ec1e721fffc7df77f661e67e92a.jpg",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.pinimg.com/564x/43/7e/2e/437e2ec1e721fffc7df77f661e67e92a.jpg",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.pinimg.com/564x/43/7e/2e/437e2ec1e721fffc7df77f661e67e92a.jpg",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://i.pinimg.com/564x/43/7e/2e/437e2ec1e721fffc7df77f661e67e92a.jpg",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        }
+    ]
+}

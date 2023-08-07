@@ -3,17 +3,65 @@ import { motion } from 'framer-motion'
 
 import View from 'components/shared/View'
 import Section from 'motion/Section'
-import { useNavigate } from 'react-router-dom'
+import history from 'redux/store/history'
+import { useParams } from 'react-router-dom'
+import { useAppDispatch, useAppSelector } from 'hooks/useRedux'
+import { useEffect, useState } from 'react'
+import { getAppointmentById } from 'redux/reducers/appointment'
+import { CreateBookingPayload, createBooking } from 'redux/reducers/booking'
 
 const DetailBooking = () => {
-    const navigate = useNavigate()
+    const { id: _id } = useParams<{ id: string }>()
+    const dispatch = useAppDispatch()
+    const [chosenDate, setChosenDate] = useState<string>('')
+    const [chosenTime, setChosenTime] = useState<string>('')
+    const [chosenInfo, setChosenInfo] = useState<boolean>(true)
+    const [chosenCard, setChosenCard] = useState<boolean>(false)
+
+    const infoAccount = useAppSelector((state) => state.auth.user)
+    const [usename, setUsername] = useState<string>(infoAccount?.username || '---')
+    const [phoneNumber, setPhoneNumber] = useState<string>(infoAccount?.phoneNumber || '---')
+    const [address, setAddress] = useState<string>(infoAccount?.address || '---')
+    const [email, setEmail] = useState<string>(infoAccount?.email || '---')
+
+    useEffect(() => {
+        if (_id) {
+            dispatch(getAppointmentById(_id))
+        }
+    }, [_id, dispatch])
+
+    const infoAppointment = useAppSelector((state) => state.appointment)
+
+    const [total, setTotal] = useState<number>(infoAppointment?.price || 0)
+
+    const timeSlots = chosenDate && infoAppointment?.date[chosenDate]
+
+    const handleOrder = async () => {
+        const data: CreateBookingPayload = {
+            userBookingId: infoAccount?._id,
+            date: chosenDate,
+            time: chosenTime,
+            username: usename,
+            phoneNumber: phoneNumber,
+            address: address,
+            email: email,
+            PrintCard: chosenCard,
+            total: total,
+            appointmentId: infoAppointment?._id
+        }
+
+        dispatch(createBooking(data))
+    }
+
     return (
         <Section>
             <View className='mt-[6rem] flex w-full flex-col items-start justify-start gap-8 md:flex-row'>
                 <motion.button
                     className='flex items-center gap-2 duration-300 hover:gap-4 md:hidden'
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => navigate('/booking')}
+                    onClick={() => {
+                        history.back()
+                    }}
                 >
                     <IonIcon name='arrow-back' className='text-[1.4rem] text-gray-700' />
                     <span className='font-bold'>Chọn lịch khám</span>
@@ -23,113 +71,141 @@ const DetailBooking = () => {
                         <h2 className='flex items-center gap-2 text-[1rem] font-bold text-gray-800'>
                             <IonIcon name='calendar' className='text-[1.4rem] text-gray-700' />
                             <span>Chọn ngày</span>
-                            <p className='text-gray-600'>- 12/7/2023</p>
+                            {chosenDate && <IonIcon name='checkmark-circle' className='text-[1.4rem] text-green-500' />}
                         </h2>
                         <View className='mt-8 flex flex-wrap items-center gap-4'>
-                            <motion.button
-                                className='flex h-[5rem] w-[5rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-gray-400 bg-blue-500 p-4 text-white'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                <p className='text-[0.9rem]'>FRI</p>
-                                <span className='font-bold'>07</span>
-                            </motion.button>
-                            <motion.button
-                                className='flex h-[5rem] w-[5rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-gray-400 bg-white p-4'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                <p className='text-[0.9rem]'>FRI</p>
-                                <span className='font-bold'>07</span>
-                            </motion.button>
-                            <motion.button
-                                className='flex h-[5rem] w-[5rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-gray-400 bg-white p-4'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                <p className='text-[0.9rem]'>FRI</p>
-                                <span className='font-bold'>07</span>
-                            </motion.button>
-                            <motion.button
-                                className='flex h-[5rem] w-[5rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-gray-400 bg-white p-4'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                <p className='text-[0.9rem]'>FRI</p>
-                                <span className='font-bold'>07</span>
-                            </motion.button>
-                            <motion.button
-                                className='flex h-[5rem] w-[5rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-gray-400 bg-white p-4'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                <p className='text-[0.9rem]'>FRI</p>
-                                <span className='font-bold'>07</span>
-                            </motion.button>
-                            <motion.button
-                                className='flex h-[5rem] w-[5rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-gray-400 bg-white p-4'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                <p className='text-[0.9rem]'>FRI</p>
-                                <span className='font-bold'>07</span>
-                            </motion.button>
-                            <motion.button
-                                className='flex h-[5rem] w-[5rem] cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-gray-400 bg-white p-4'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                <p className='text-[0.9rem]'>FRI</p>
-                                <span className='font-bold'>07</span>
-                            </motion.button>
+                            {Object.keys(infoAppointment?.date || {}).map((dateKey) => {
+                                return (
+                                    <motion.button
+                                        key={dateKey}
+                                        className={
+                                            chosenDate === dateKey
+                                                ? 'flex items-center justify-center rounded-lg border border-gray-400 bg-blue-500 px-6 py-2 font-bold text-white'
+                                                : 'flex items-center justify-center rounded-lg border border-gray-400 bg-white px-6 py-2 font-bold text-gray-600'
+                                        }
+                                        whileTap={{ scale: 0.9 }}
+                                        onClick={() => {
+                                            setChosenDate(dateKey)
+                                        }}
+                                    >
+                                        <p className='text-[0.9rem] font-bold'>{dateKey}</p>
+                                    </motion.button>
+                                )
+                            })}
                         </View>
                     </View>
                     <View className='mt-8 rounded-lg bg-gray-100 p-4 shadow-md'>
                         <h2 className=' flex items-center gap-2 text-[1rem] font-bold text-gray-800'>
                             <IonIcon name='time' className='text-[1.4rem] text-gray-700' />
                             <span>Chọn giờ</span>
+                            {chosenTime && <IonIcon name='checkmark-circle' className='text-[1.4rem] text-green-500' />}
                         </h2>
                         <View className='mt-8 flex flex-wrap items-center gap-4'>
-                            <motion.button
-                                className='flex items-center justify-center rounded-lg border border-gray-400 bg-white px-6 py-2 font-bold text-gray-600'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                08 - 09 AM
-                            </motion.button>
-                            <motion.button
-                                className='flex items-center justify-center rounded-lg border border-gray-400 bg-white px-6 py-2 font-bold text-gray-600'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                08 - 09 AM
-                            </motion.button>
-                            <motion.button
-                                className='flex items-center justify-center rounded-lg border border-gray-400 bg-blue-500 px-6 py-2 font-bold text-white'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                08 - 09 AM
-                            </motion.button>
-                            <motion.button
-                                className='flex items-center justify-center rounded-lg border border-gray-400 bg-white px-6 py-2 font-bold text-gray-600'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                08 - 09 AM
-                            </motion.button>
-                            <motion.button
-                                className='flex items-center justify-center rounded-lg border border-gray-400 bg-white px-6 py-2 font-bold text-gray-600'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                08 - 09 AM
-                            </motion.button>
-                            <motion.button
-                                className='flex items-center justify-center rounded-lg border border-gray-400 bg-white px-6 py-2 font-bold text-gray-600'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                08 - 09 AM
-                            </motion.button>
-                            <motion.button
-                                className='flex items-center justify-center rounded-lg border border-gray-400 bg-white px-6 py-2 font-bold text-gray-600'
-                                whileTap={{ scale: 0.9 }}
-                            >
-                                08 - 09 AM
-                            </motion.button>
+                            {chosenDate ? (
+                                timeSlots &&
+                                timeSlots.length > 0 &&
+                                timeSlots.map((timeSlot) => (
+                                    <motion.button
+                                        key={timeSlot}
+                                        className={
+                                            chosenTime === timeSlot
+                                                ? 'flex items-center justify-center rounded-lg border border-gray-400 bg-blue-500 px-6 py-2 font-bold text-white'
+                                                : 'flex items-center justify-center rounded-lg border border-gray-400 bg-white px-6 py-2 font-bold text-gray-600'
+                                        }
+                                        whileTap={{ scale: 0.9 }}
+                                        onClick={() => {
+                                            setChosenTime(timeSlot)
+                                        }}
+                                    >
+                                        {timeSlot}
+                                    </motion.button>
+                                ))
+                            ) : (
+                                <p className='text-red-500'>Vui lòng chọn ngày</p>
+                            )}
                         </View>
                     </View>
+
+                    <View className='mt-8 flex flex-col items-start gap-4 rounded-lg bg-gray-100 p-4 shadow-md'>
+                        <h1 className=' flex items-center gap-2 text-[1rem] font-bold text-gray-800'>
+                            Thông tin cá nhân
+                        </h1>
+                        <View className='flex w-full flex-col gap-4'>
+                            <View className='flex items-center gap-4'>
+                                <motion.button
+                                    whileTap={{ scale: 0.9 }}
+                                    className={
+                                        chosenInfo
+                                            ? 'rounded-lg border border-blue-500 bg-blue-500 px-4 py-2 text-[0.9rem] font-bold text-white'
+                                            : 'rounded-lg border bg-white px-4 py-2 text-[0.9rem] font-bold text-gray-700'
+                                    }
+                                    onClick={() => {
+                                        setChosenInfo(true)
+                                    }}
+                                >
+                                    Thông tin tài khoản
+                                </motion.button>
+                                <motion.button
+                                    whileTap={{ scale: 0.9 }}
+                                    className={
+                                        chosenInfo
+                                            ? 'rounded-lg border bg-white px-4 py-2 text-[0.9rem] font-bold text-gray-700'
+                                            : 'rounded-lg border border-blue-500 bg-blue-500 px-4 py-2 text-[0.9rem] font-bold text-white'
+                                    }
+                                    onClick={() => {
+                                        setChosenInfo(false)
+                                    }}
+                                >
+                                    Thông tin khác
+                                </motion.button>
+                            </View>
+                            <View className='flex w-full flex-col gap-2 '>
+                                <input
+                                    type='text'
+                                    value={usename}
+                                    onChange={(e) => {
+                                        setUsername(e.target.value)
+                                    }}
+                                    disabled={chosenInfo}
+                                    className='mt-4 w-full max-w-[25rem] rounded-lg border border-gray-400 p-2 text-[0.9rem] font-bold text-gray-800 outline-none'
+                                />
+                                <input
+                                    type='text'
+                                    value={address}
+                                    onChange={(e) => {
+                                        setAddress(e.target.value)
+                                    }}
+                                    disabled={chosenInfo}
+                                    className='mt-4 w-full max-w-[25rem] rounded-lg border border-gray-400 p-2 text-[0.9rem] font-bold text-gray-800 outline-none'
+                                />
+                                <input
+                                    type='text'
+                                    value={email}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value)
+                                    }}
+                                    disabled={chosenInfo}
+                                    className='mt-4 w-full max-w-[25rem] rounded-lg border border-gray-400 p-2 text-[0.9rem] font-bold text-gray-800 outline-none'
+                                />
+                            </View>
+                        </View>
+                    </View>
+
                     <View className='mt-8 flex items-start gap-4 rounded-lg bg-gray-100 p-4 shadow-md'>
                         <View>
-                            <input type='checkbox' className='h-4 w-4' />
+                            <input
+                                type='checkbox'
+                                className='h-4 w-4'
+                                checked={chosenCard}
+                                onChange={(e) => {
+                                    setChosenCard(!chosenCard)
+                                    if (chosenCard) {
+                                        setTotal(total - 50000)
+                                    } else {
+                                        setTotal(total + 50000)
+                                    }
+                                }}
+                            />
                         </View>
                         <View>
                             <p className='font-bold text-[1.2re] text-gray-700'>Cấp thẻ thông tin vật lý</p>
@@ -149,32 +225,11 @@ const DetailBooking = () => {
                                 type='text'
                                 className='mt-4 w-full max-w-[25rem] rounded-lg border border-gray-400 p-2 outline-none'
                                 placeholder='Nhập số điện thoại'
+                                value={phoneNumber}
+                                onChange={(e) => {
+                                    setPhoneNumber(e.target.value)
+                                }}
                             />
-                        </View>
-                    </View>
-                    <View className='mt-8 flex items-start gap-4 rounded-lg bg-gray-100 p-4 shadow-md'>
-                        <View>
-                            <IonIcon name='people' className='text-[1.4rem] text-gray-700' />
-                        </View>
-                        <View>
-                            <p className='font-bold text-[1.2re] text-gray-700'>Đặt phòng cho thành viên gia đình</p>
-                            <span className='text-[0.9rem] text-gray-700'>
-                                Danh sách thành viên gia đình đủ điều kiện nhận gói trên.
-                            </span>
-                            <View className='flex gap-4'>
-                                <motion.button
-                                    whileTap={{ scale: 0.9 }}
-                                    className='mt-4 rounded-lg bg-blue-500 px-4 py-2 text-white'
-                                >
-                                    Chỉ mình bạn
-                                </motion.button>
-                                <motion.button
-                                    whileTap={{ scale: 0.9 }}
-                                    className='mt-4 rounded-lg bg-white px-4 py-2 text-gray-700'
-                                >
-                                    Cả gia đình
-                                </motion.button>
-                            </View>
                         </View>
                     </View>
                 </View>
@@ -184,18 +239,20 @@ const DetailBooking = () => {
                     </h2>
                     <View className='flex w-full flex-col gap-4 border-y border-gray-200 py-4'>
                         <View className='flex justify-between font-bold text-gray-700'>
-                            <span>Lịch đặt / kiểm tra </span>
-                            <motion.button className='text-blue-500' whileTap={{ scale: 0.9 }}>
-                                Chỉnh sửa
-                            </motion.button>
+                            <span>Khách hàng:</span>
+                            <span>{usename}</span>
                         </View>
                         <View className='flex justify-between font-bold text-gray-700'>
-                            <span>Thông tin hoàn chỉnh</span>
-                            <span>2x Rx.1700/-</span>
+                            <span>Số điện thoại:</span>
+                            <span>{phoneNumber}</span>
                         </View>
                         <View className='flex justify-between font-bold text-gray-700'>
-                            <span>Kiểm tra sức khỏe</span>
-                            <span>2x Rx.1700/-</span>
+                            <span>Địa chỉ:</span>
+                            <span>{address}</span>
+                        </View>
+                        <View className='flex justify-between font-bold text-gray-700'>
+                            <span>Email:</span>
+                            <span>{email}</span>
                         </View>
                     </View>
                     <View className='flex w-full flex-col gap-4 border-b border-gray-200 py-4'>
@@ -204,16 +261,20 @@ const DetailBooking = () => {
                                 Kiểm tra thông tin <span className='text-red-500'>*</span>{' '}
                             </p>
                         </h2>
-                        <View className='flex flex-col justify-between gap-2  font-bold text-gray-700'>
-                            <h2>Địa chỉ</h2>
+                        <View className='flex flex-col justify-between gap-4  font-bold text-gray-700'>
                             <View className='flex justify-between'>
-                                <p className='flex items-center gap-2'>
-                                    958/3 Au co, P.14, Tan Binh
-                                    <IonIcon name='checkmark-circle' className='text-[1.4rem] text-green-500' />
+                                <p className='flex items-center gap-2'>Phòng:</p>
+                                <p className='flex items-center gap-2'>{infoAppointment?.name}</p>
+                            </View>
+                            <View className='flex justify-between'>
+                                <p className='flex items-center gap-2'>Địa chỉ:</p>
+                                <p className='limit-1 flex max-w-[15rem] items-center gap-2 '>
+                                    {infoAppointment?.address}
                                 </p>
-                                <motion.button className='text-blue-500' whileTap={{ scale: 0.9 }}>
-                                    Thay đổi
-                                </motion.button>
+                            </View>
+                            <View className='flex justify-between'>
+                                <p className='flex items-center gap-2'>SDT:</p>
+                                <p className='flex items-center gap-2'>{infoAppointment?.phoneNumber}</p>
                             </View>
                         </View>
                     </View>
@@ -225,23 +286,25 @@ const DetailBooking = () => {
                         </h2>
                         <View className='flex flex-col justify-between gap-2  font-bold text-gray-700'>
                             <View className='flex justify-between'>
-                                <p className='flex items-center gap-2'>
+                                <View className='flex items-center gap-2'>
                                     <IonIcon name='calendar' className='text-[1.4rem] text-gray-700' />
-                                    <span>06:00 AM Sat, 12 Jun 2023</span>
-                                </p>
+                                    <View className='flex items-center gap-2 text-[0.9rem]'>
+                                        <span>{chosenDate ? chosenDate : 'dd/mm/yyyy'}</span> <span>-</span>
+                                        <span>{chosenTime ? chosenTime : '0:00'}</span>
+                                    </View>
+                                </View>
                             </View>
                         </View>
                     </View>
                     <View className='flex w-full flex-col gap-4 border-b border-gray-200 py-4'>
                         <h2 className='flex items-center gap-2 text-[1rem] font-bold text-gray-800'>
                             <p>
-                                Đặt cho<span className='text-red-500'>*</span>{' '}
+                                Thẻ vật lý<span className='text-red-500'>*</span>{' '}
                             </p>
                         </h2>
                         <View className='flex flex-wrap gap-2 '>
-                            <span className='rounded-full bg-blue-400 px-3 py-1 text-[0.9rem] text-white'>Cá nhân</span>
                             <span className='rounded-full bg-blue-400 px-3 py-1 text-[0.9rem] text-white'>
-                                Người thân
+                                {chosenCard ? 'Có' : 'Không'}
                             </span>
                         </View>
                     </View>
@@ -250,13 +313,19 @@ const DetailBooking = () => {
                             <h2 className='flex items-center gap-2 text-[1rem] font-bold text-gray-800'>
                                 Tổng hóa đơn
                             </h2>
-                            <span className='text-[1.2rem] font-bold'>9.000.000đ</span>
+                            <span className='text-[1.2rem] font-bold'>
+                                {total.toLocaleString('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                })}
+                            </span>
                         </View>
                         <motion.button
                             className='mt-4 rounded-lg bg-blue-600 py-4 font-bold text-white duration-300 hover:bg-blue-500'
                             whileTap={{ scale: 0.9 }}
+                            onClick={handleOrder}
                         >
-                            Quy trình thanh toán
+                            Thanh toán
                         </motion.button>
                     </View>
                     <View className='mt-4 flex w-full gap-4 rounded-lg  bg-gray-100 p-4'>

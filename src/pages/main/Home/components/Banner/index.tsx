@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import IonIcon from '@reacticons/ionicons'
 
 import View from 'components/shared/View'
+import { toast } from 'react-toastify'
 
 const Banner = () => {
     const [isCheckWidth, setIsCheckWidth] = useState(false)
@@ -18,6 +19,7 @@ const Banner = () => {
     useEffect(() => {
         handleCheckWidth()
         window.addEventListener('resize', handleCheckWidth)
+
         return () => {
             window.removeEventListener('resize', handleCheckWidth)
         }
@@ -34,34 +36,26 @@ const Banner = () => {
                     Việt Nam.
                 </span>
             </div>
-            {isCheckWidth ? (
-                <motion.button
-                    className='mt-6 rounded-full border border-gray-300 bg-gray-100 px-8 py-2 shadow-md md:mt-10'
-                    whileTap={{ scale: 0.9 }}
+
+            <div className='relative mt-8 text-[0.8rem] font-bold text-gray-300'>
+                Bấm phím <span className='rounded-lg bg-slate-800 p-1 px-2 text-white'>A</span> để bắt đầu
+                <motion.div
+                    animate={{
+                        y: [0, 10, 0, 10, 0]
+                    }}
+                    transition={{
+                        duration: 2,
+                        ease: 'easeInOut',
+                        times: [0, 0.2, 0.5, 0.8, 1],
+                        repeat: Infinity
+                    }}
                 >
-                    Bắt đầu
-                </motion.button>
-            ) : (
-                <div className='relative mt-8 text-[0.8rem] font-bold text-gray-300'>
-                    Bấm phím <span className='rounded-lg bg-slate-800 p-1 px-2 text-white'>A</span> để bắt đầu
-                    <motion.div
-                        animate={{
-                            y: [0, 10, 0, 10, 0]
-                        }}
-                        transition={{
-                            duration: 2,
-                            ease: 'easeInOut',
-                            times: [0, 0.2, 0.5, 0.8, 1],
-                            repeat: Infinity
-                        }}
-                    >
-                        <IonIcon
-                            name='caret-down'
-                            className='absolute bottom-[-5rem] left-[50%] translate-x-[-50%] translate-y-[100%] text-[2rem] text-gray-700'
-                        />
-                    </motion.div>
-                </div>
-            )}
+                    <IonIcon
+                        name='caret-down'
+                        className='absolute bottom-[-5rem] left-[50%] translate-x-[-50%] text-[2rem] text-gray-700 lg:translate-y-[100%]'
+                    />
+                </motion.div>
+            </div>
         </View>
     )
 }

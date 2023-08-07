@@ -8,7 +8,7 @@ module.exports = {
                 base: 'rgba(149, 157, 165, 0.2) 0px 8px 24px;'
             },
             colors: {
-                primary: '#ff89a1'
+                primary: '#8BC6EC'
             }
         }
     },
